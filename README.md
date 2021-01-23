@@ -5,7 +5,9 @@
 This package will be a collection of inference-based improvements to the fastai, as listed out in [this](https://github.com/fastai/fastai/projects/1#card-53144632) list.
 
 A summary of implementations so far:
-{% include note.html content='(x) means implemented' %}
+
+> (x) means implemented
+
 
 * `jit` export methodology (x)
 * `onnx` export methodology ( )
