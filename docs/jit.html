@@ -1,13 +1,13 @@
 ---
 
-title: Jit
+title: Torchscript
 
 
 keywords: fastai
 sidebar: home_sidebar
 
-summary: "Jit support for `fastai` models"
-description: "Jit support for `fastai` models"
+summary: "`torchscript.jit` support for `fastai` models"
+description: "`torchscript.jit` support for `fastai` models"
 nb_path: "00_jit.ipynb"
 ---
 <!--
@@ -26,171 +26,16 @@ nb_path: "00_jit.ipynb"
     
 <div class="cell border-box-sizing code_cell rendered">
 
-</div>
-    {% endraw %}
-
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Currently only Vision and Tabular models are supported</p>
-
-</div>
-</div>
-</div>
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">fastai.vision.all</span> <span class="kn">import</span> <span class="o">*</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">set_seed</span><span class="p">(</span><span class="mi">99</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-<span class="n">path</span> <span class="o">=</span> <span class="n">untar_data</span><span class="p">(</span><span class="n">URLs</span><span class="o">.</span><span class="n">PETS</span><span class="p">)</span><span class="o">/</span><span class="s1">&#39;images&#39;</span>
-<span class="n">dls</span> <span class="o">=</span> <span class="n">ImageDataLoaders</span><span class="o">.</span><span class="n">from_name_func</span><span class="p">(</span>
-    <span class="n">path</span><span class="p">,</span> <span class="n">get_image_files</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">valid_pct</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
-    <span class="n">label_func</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isupper</span><span class="p">(),</span> <span class="n">item_tfms</span><span class="o">=</span><span class="n">Resize</span><span class="p">(</span><span class="mi">224</span><span class="p">))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-<div class="output_html rendered_html output_subarea ">
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-    {% endraw %}
-
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>We'll train a quick model to export:</p>
-
-</div>
-</div>
-</div>
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span> <span class="o">=</span> <span class="n">cnn_learner</span><span class="p">(</span><span class="n">dls</span><span class="p">,</span> <span class="n">resnet34</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="n">error_rate</span><span class="p">)</span><span class="o">.</span><span class="n">to_fp16</span><span class="p">()</span>
-<span class="n">learn</span><span class="o">.</span><span class="n">fine_tune</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
 <div class="output_wrapper">
 <div class="output">
 
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>Downloading: &#34;https://download.pytorch.org/models/resnet34-333f7ec4.pth&#34; to /root/.cache/torch/hub/checkpoints/resnet34-333f7ec4.pth
+<pre>/mnt/d/lib/python3.7/site-packages/torch/cuda/__init__.py:52: UserWarning: CUDA initialization: Found no NVIDIA driver on your system. Please check that you have an NVIDIA GPU and installed a driver from http://www.nvidia.com/Download/index.aspx (Triggered internally at  /pytorch/c10/cuda/CUDAFunctions.cpp:100.)
+  return torch._C._cuda_getDeviceCount() &gt; 0
 </pre>
 </div>
-</div>
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: left;">
-      <th>epoch</th>
-      <th>train_loss</th>
-      <th>valid_loss</th>
-      <th>error_rate</th>
-      <th>time</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>0</td>
-      <td>0.161436</td>
-      <td>0.026999</td>
-      <td>0.008119</td>
-      <td>00:46</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-</div>
-
-<div class="output_area">
-
-
-<div class="output_html rendered_html output_subarea ">
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: left;">
-      <th>epoch</th>
-      <th>train_loss</th>
-      <th>valid_loss</th>
-      <th>error_rate</th>
-      <th>time</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>0</td>
-      <td>0.059667</td>
-      <td>0.012131</td>
-      <td>0.005413</td>
-      <td>00:49</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
 </div>
 
 </div>
@@ -201,9 +46,53 @@ nb_path: "00_jit.ipynb"
 
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>There are two possible scenarios with <code>jit</code>: <code>trace</code> and <code>script</code>. Ideally you should use <code>torch.jit.script</code>, however if there is dynamic behavior, <code>torch.jit.trace</code> should be utilized instead. As a result <code>trace</code> is tried by default</p>
-<p><code>Learner.to_jit()</code> will perform this decision unless a specific version is specified:</p>
-<p>Ideally <code>torch.jit.trace</code> should be used, as it is built for dynamic behavior (such as CNN's). If your model is not convolutional in nature you should use <code>trace</code></p>
+<p>Currently only Vision and Tabular models are supported. More details on this technology can be found on the official <a href="https://pytorch.org/docs/stable/jit.html">pytorch documentation</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Motivations:</p>
+<ul>
+<li>What is torchscript? What is a serialized model?</li>
+<li>Why one would like to export a model to another format?</li>
+<li>Is it faster? </li>
+</ul>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>There are two possible scenarios with <a href="/fastexport/jit.html"><code>jit</code></a>: <code>trace</code> and <code>script</code>.</p>
+<ul>
+<li><code>torch.jit.trace</code> when the module has no flow control/ dynamic behaviour. (e.g. modules build with <code>nn.Sequential</code>). </li>
+<li><code>torch.jit.script</code> should be utilized when there are dynamics. (e.g. RNNs, Language models). 
+As a result <code>trace</code> is tried by default. You can also have a <a href="https://pytorch.org/docs/stable/jit.html#mixing-tracing-and-scripting">combination of both</a>.</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<blockquote><p>from Pytorch doc:In many cases either tracing or scripting is an easier approach for converting a model to TorchScript. Tracing and scripting can be composed to suit the particular requirements of a part of a modelScripted functions can call traced functions. This is particularly useful when you need to use control-flow around a simple feed-forward model. For instance the beam search of a sequence to sequence model will typically be written in script but can call an encoder module generated using tracing.</p>
+</blockquote>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Most of vision encoders are `traceable's.</p>
 
 </div>
 </div>
@@ -233,7 +122,46 @@ nb_path: "00_jit.ipynb"
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h3 id="Learner.to_jit" class="doc_header"><code>Learner.to_jit</code><a href="https://github.com/muellerzr/fastexport/tree/master/fastexport/jit.py#L23" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>Learner.to_jit</code>(<strong><code>fname</code></strong>=<em><code>'export.pt'</code></em>, <strong><code>mode</code></strong>=<em><code>'trace'</code></em>)</p>
+<h3 id="JitMode" class="doc_header"><code>class</code> <code>JitMode</code><a href="" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>JitMode</code>(<strong>*<code>args</code></strong>, <strong>**<code>kwargs</code></strong>)</p>
+</blockquote>
+<p>All possible export modes as attributes to get tab-completion and typo-proofing</p>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Another important thing to consider, is the serving device. If you plan on doing inference on CPU, yoou should first convert you model to CPU, and then trace-it (<a href="https://pytorch.org/docs/stable/jit.html#frequently-asked-questions">ref</a>)</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h3 id="Learner.to_jit" class="doc_header"><code>Learner.to_jit</code><a href="https://github.com/muellerzr/fastexport/tree/master/fastexport/jit.py#L26" class="source_link" style="float:right">[source]</a></h3><blockquote><p><code>Learner.to_jit</code>(<strong><code>fname</code></strong>=<em><code>'export.ts'</code></em>, <strong><code>mode</code></strong>=<em><code>'trace'</code></em>, <strong><code>device</code></strong>=<em><code>'cpu'</code></em>)</p>
 </blockquote>
 <p>Exports <code>learn.model</code> using <a href="/fastexport/jit.html"><code>jit</code></a> with <code>mode</code> to <code>fname</code></p>
 
@@ -300,7 +228,24 @@ nb_path: "00_jit.ipynb"
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">to_jit</span><span class="p">(</span><span class="s1">&#39;trace.pt&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">JitMode</span><span class="o">.</span><span class="n">Trace</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="p">(</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">/</span><span class="s1">&#39;models&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">to_jit</span><span class="p">(</span><span class="s1">&#39;models/tab.pt&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">JitMode</span><span class="o">.</span><span class="n">Trace</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -324,8 +269,8 @@ nb_path: "00_jit.ipynb"
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">loaded_model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;trace.pt&quot;</span><span class="p">)</span>
-<span class="n">cat</span><span class="p">,</span><span class="n">cont</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">()</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">loaded_model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;models/tab.pt&quot;</span><span class="p">)</span>
+<span class="n">cat</span><span class="p">,</span><span class="n">cont</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">one_batch</span><span class="p">()</span>
 </pre></div>
 
     </div>
@@ -364,9 +309,9 @@ nb_path: "00_jit.ipynb"
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>tensor([[-0.0414,  0.0794],
-        [-0.0426,  0.1249],
-        [-0.0102,  0.1299]], device=&#39;cuda:0&#39;, grad_fn=&lt;SliceBackward&gt;)</pre>
+<pre>tensor([[-0.0424,  0.0352],
+        [-0.0509,  0.0218],
+        [-0.0334,  0.0130]], grad_fn=&lt;SliceBackward&gt;)</pre>
 </div>
 
 </div>
@@ -407,9 +352,10 @@ nb_path: "00_jit.ipynb"
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">fastai.vision.all</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="n">path</span> <span class="o">=</span> <span class="n">untar_data</span><span class="p">(</span><span class="n">URLs</span><span class="o">.</span><span class="n">PETS</span><span class="p">)</span><span class="o">/</span><span class="s1">&#39;images&#39;</span>
+<span class="k">def</span> <span class="nf">label_func</span><span class="p">(</span><span class="n">x</span><span class="p">):</span> <span class="k">return</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isupper</span><span class="p">()</span>
 <span class="n">dls</span> <span class="o">=</span> <span class="n">ImageDataLoaders</span><span class="o">.</span><span class="n">from_name_func</span><span class="p">(</span>
-    <span class="n">path</span><span class="p">,</span> <span class="n">get_image_files</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">valid_pct</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
-    <span class="n">label_func</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isupper</span><span class="p">(),</span> <span class="n">item_tfms</span><span class="o">=</span><span class="n">Resize</span><span class="p">(</span><span class="mi">224</span><span class="p">))</span>
+    <span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">get_image_files</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">valid_pct</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+    <span class="n">label_func</span><span class="o">=</span><span class="n">label_func</span><span class="p">,</span> <span class="n">item_tfms</span><span class="o">=</span><span class="n">Resize</span><span class="p">(</span><span class="mi">224</span><span class="p">))</span>
 <span class="n">learn</span> <span class="o">=</span> <span class="n">cnn_learner</span><span class="p">(</span><span class="n">dls</span><span class="p">,</span> <span class="n">resnet18</span><span class="p">)</span>
 </pre></div>
 
@@ -434,7 +380,7 @@ nb_path: "00_jit.ipynb"
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">to_jit</span><span class="p">(</span><span class="s1">&#39;trace.pt&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">JitMode</span><span class="o">.</span><span class="n">Trace</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">to_jit</span><span class="p">(</span><span class="s1">&#39;models/resnet.pt&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">JitMode</span><span class="o">.</span><span class="n">Trace</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -458,32 +404,14 @@ nb_path: "00_jit.ipynb"
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">loaded_model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;trace.pt&quot;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">loaded_model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;models/resnet.pt&quot;</span><span class="p">)</span>
 <span class="n">loaded_model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
-<span class="n">x</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">one_batch</span><span class="p">()</span>
+<span class="n">x</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">dls</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">one_batch</span><span class="p">()</span>
 
 <span class="n">probs</span> <span class="o">=</span> <span class="n">loaded_model</span><span class="p">(</span><span class="n">x</span><span class="p">);</span> <span class="n">probs</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-<div class="output_area">
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>tensor([[-1.1999, -2.8738],
-        [ 5.3266,  1.8526],
-        [ 0.1073, -0.3077]], device=&#39;cuda:0&#39;, grad_fn=&lt;SliceBackward&gt;)</pre>
-</div>
-
-</div>
-
 </div>
 </div>
 

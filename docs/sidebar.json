@@ -1,6 +1,6 @@
 {
   "fastexport": {
     "Overview": "/",
-    "Jit": "jit.html"
+    "Torchscript": "jit.html"
   }
 }

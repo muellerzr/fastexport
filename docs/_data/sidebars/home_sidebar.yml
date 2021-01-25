@@ -10,7 +10,7 @@ entries:
       title: Overview
       url: /
     - output: web,pdf
-      title: Jit
+      title: Torchscript
       url: jit.html
     output: web
     title: fastexport
