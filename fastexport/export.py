@@ -9,3 +9,11 @@ from fastai.learner import *
 from fastai.basics import *
 
 from .jit import *
+
+# Cell
+@patch
+def export_dls(self:Learner, fname='exported_dls.pkl'):
+    "Export fastai DataLoaders for inference"
+    self._end_cleanup()
+    dls = self.dls.new_empty()
+    torch.save(dls, str(fname), pickle_module=pickle, pickle_protocol=2)
