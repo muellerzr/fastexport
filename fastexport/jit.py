@@ -8,24 +8,20 @@ from fastcore.all import *
 from fastai.learner import *
 from fastai.torch_core import TensorBase
 
-# Internal Cell
-@patch
-def requires_grad_(self:TensorBase, requires_grad=True):
-    # Workaround https://github.com/pytorch/pytorch/issues/50219
-    self.requires_grad = requires_grad
-    return self
-
 # Cell
 mk_class('JitMode', **{o:o.lower() for o in ['Trace','Script']},
          doc="All possible export modes as attributes to get tab-completion and typo-proofing")
 
 # Cell
 @patch
-def to_jit(self:Learner, fname='export.pt', mode=JitMode.Trace):
+def to_jit(self:Learner, fname='torchscript_model.ts', mode=JitMode.Trace, cpu=False):
     "Exports `learn.model` using `jit` with `mode` to `fname`"
     inp = self.dls.one_batch()[:self.dls.n_inp]
     if not isinstance(inp, tuple): inp = (inp,)
     self.model.eval()
     self.model.to(inp[0].device)
+    if cpu:
+        self.model.cpu()
+        inp = to_device(inp, 'cpu')
     traced_model = getattr(torch.jit, mode)(self.model, inp)
-    torch.jit.save(traced_model, fname)
+    torch.jit.save(traced_model, str(fname))
