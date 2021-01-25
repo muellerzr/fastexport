@@ -24,7 +24,7 @@ mk_class('JitMode', **{o:o.lower() for o in ['Trace','Script']},
 
 # Cell
 @patch
-def to_jit(self:Learner, fname='export.ts', mode=JitMode.Trace, device='cpu'):
+def to_jit(self:Learner, fname='export', mode=JitMode.Trace, device='cpu', **kwargs):
     "Exports `learn.model` using `jit` with `mode` to `fname`"
     inp = self.dls.one_batch()[:self.dls.n_inp]
     if not isinstance(inp, tuple): inp = (inp,)
@@ -32,4 +32,4 @@ def to_jit(self:Learner, fname='export.ts', mode=JitMode.Trace, device='cpu'):
     self.model.to(device)
     inp = to_device(inp, device)
     traced_model = getattr(torch.jit, mode)(self.model, inp)
-    torch.jit.save(traced_model, fname)
+    torch.jit.save(traced_model, self.path/fname+'.ts')
