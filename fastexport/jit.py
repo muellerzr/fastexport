@@ -32,4 +32,4 @@ def to_jit(self:Learner, fname='export.ts', mode=JitMode.Trace, device='cpu'):
     self.model.to(device)
     inp = to_device(inp, device)
     traced_model = getattr(torch.jit, mode)(self.model, inp)
-    torch.jit.save(traced_model, learn.path/fname)
+    torch.jit.save(traced_model, str(self.path/fname))
